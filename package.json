@@ -1,0 +1,146 @@
+{
+    "name": "oneagent-javascript",
+    "version": "0.0.0",
+    "description": "",
+    "main": "externs.js",
+    "scripts": {
+        "help": "node dist/tools/npm-scripts/build.js --help",
+        "lint": "tslint -c tslint.json 'source/**/*.ts' && echo No Lint-Problems found",
+        "lint-fix": "tslint -c tslint.json 'source/**/*.ts' --fix",
+        "lint-tools": "tslint -c tools/tslint.json 'tools/**/*.ts'",
+        "lint-core": "tslint -c tslint.json 'source/core/core/**/*.ts'",
+        "lint-asyncCore": "tslint -c tslint.json 'source/core/asyncCore/**/*.ts'",
+        "lint-initCode": "tslint -c tslint.json 'source/core/initCode/**/*.ts'",
+        "lint-initConfig": "tslint -c tslint.json 'source/core/initConfig/**/*.ts'",
+        "lint-modules": "tslint -c tslint.json 'source/modules/**/*.ts'",
+        "lint-plugins": "tslint -c tslint.json 'plugins/**/*.js'",
+        "lint-test-custom-rules": "tslint -c tools/tslintTest.json 'tools/rulesTest/**/*.ts'",
+        "build": "copyfiles config.json dist && npm run lint && npm run lint-tools && node --max-old-space-size=4096 dist/tools/npm-scripts/build.js",
+        "build-without-lint": "copyfiles config.json dist && node -max-old-space-size=4096 dist/tools/npm-scripts/build.js",
+        "build-tools": "rimraf dist/tools && tsc -P tools/tsconfig.json",
+        "clean": "rimraf dist",
+        "test": "jest --silent",
+        "pack-agentres": "ant -Dbasedir=\"%npm_config_appmonDir%\\jloadtrace\" -f %npm_config_appmonDir%\\jloadtrace\\build.core.xml packAgentres",
+        "build-publish-local": "gradlew publishToMavenLocal",
+        "update-appmon": "node dist/tools/npm-scripts/update-appmon.js",
+        "build-appmon-dev": "npm run build-publish-local -- -Ptarget=appmon && npm run pack-agentres && npm run notify && npm run update-appmon",
+        "build-worker-dev": "npm run build-publish-local -- -Ptarget=worker && npm run notify",
+        "update-dynatrace-server": "node dist/tools/npm-scripts/update-dynatrace-server.js",
+        "update-dynatrace-bigtest": "node dist/tools/npm-scripts/update-dynatrace-bigtest.js",
+        "build-dynatrace-dev-lint": "npm run build -- --target=dynatrace && npm run notify && npm run update-dynatrace-bigtest && npm run update-dynatrace-server",
+        "build-dynatrace-dev": "npm run build-without-lint -- --target=dynatrace && npm run notify && npm run update-dynatrace-bigtest && npm run update-dynatrace-server",
+        "notify": "node dist/tools/npm-scripts/notify.js --enabled=%npm_config_notify%",
+        "apidoc": "typedoc --options ./doc.js ./source",
+        "tools-log-transformer": "node dist/tools/npm-scripts/log-transformer.js",
+        "hot-reload-dev": "nodemon --config nodemon.config.json"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "testEnvironment": "jest-environment-jsdom-thirteen",
+        "collectCoverage": true,
+        "coverageDirectory": "test-results/cobertura",
+        "coveragePathIgnorePatterns": [
+            "/\\.spec\\.ts$/i",
+            "/.*node_modules.*/"
+        ],
+        "coverageReporters": [
+            "cobertura"
+        ],
+        "reporters": [
+            "default",
+            [
+                "jest-junit",
+                {
+                    "suiteName": "jsagent",
+                    "outputDirectory": "test-results/junit/"
+                }
+            ]
+        ],
+        "clearMocks": true,
+        "unmockedModulePathPatterns": [
+            "expect-more-jest"
+        ],
+        "setupFilesAfterEnv": [
+            "<rootDir>/source/testtools/setup.ts"
+        ],
+        "testURL": "http://localhost:3000/context.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://bitbucket.lab.dynatrace.org/scm/one/oneagent-javascript.git"
+    },
+    "engines": {
+        "node": ">=11.9.0",
+        "npm": ">=5.0.0"
+    },
+    "author": "Dynatrace",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/angular": "^1.6.51",
+        "@types/chalk": "^0.4.31",
+        "@types/dojo": "^1.9.41",
+        "@types/google-closure-compiler": "0.0.18",
+        "@types/jest": "^23.3.13",
+        "@types/jquery": "^3.3.29",
+        "@types/minimist": "^1.2.0",
+        "@types/moment": "^2.13.0",
+        "@types/node": "^8.3.0",
+        "@types/node-fetch": "^1.6.7",
+        "@types/node-notifier": "0.0.28",
+        "@types/parse5": "^5.0.0",
+        "@types/promise-polyfill": "^6.0.0",
+        "@types/request": "^2.47.0",
+        "@types/rimraf": "0.0.28",
+        "@types/source-map": "^0.5.0",
+        "chalk": "^1.1.3",
+        "copyfiles": "^1.2.0",
+        "expect-more-jest": "^2.4.1",
+        "google-closure-compiler": "20170521",
+        "google-closure-compiler-js": "20170806.0.0",
+        "jest": "^24.0.0",
+        "jest-date-mock": "^1.0.7",
+        "jest-environment-jsdom-thirteen": "0.0.2",
+        "jest-extended": "^0.11.1",
+        "jest-junit": "^6.2.1",
+        "jszip": "^3.1.4",
+        "lodash": "^4.14.1",
+        "minimist": "^1.2.0",
+        "moment": "^2.18.1",
+        "node-fetch": "^2.1.1",
+        "node-notifier": "^5.2.1",
+        "nodemon": "^1.18.7",
+        "rimraf": "^2.6.1",
+        "rollup": "^0.62.0",
+        "rollup-plugin-cleanup": "3.0.0",
+        "rollup-plugin-commonjs": "^9.1.3",
+        "rollup-plugin-node-resolve": "^3.3.0",
+        "rollup-plugin-sourcemaps": "^0.4.2",
+        "ts-jest": "^23.10.5",
+        "ts-node": "^3.0.6",
+        "tslint": "^5.11.0",
+        "tslint-eslint-rules": "4.1.1",
+        "typescript": "^2.6.2",
+        "xmlbuilder": "^10.0.0"
+    },
+    "dependencies": {
+        "@angular/common": "6.0.0",
+        "@angular/compiler": "6.0.0",
+        "@angular/core": "6.0.0",
+        "@angular/http": "6.0.0",
+        "@angular/platform-browser": "6.0.0",
+        "angular": "^1.7.5",
+        "dojo": "^1.14.2",
+        "jquery": "3.3.1",
+        "jsdom-worker": "^0.1.0",
+        "parse5": "4.0.0",
+        "promise-polyfill": "^8.0.0",
+        "request": "^2.83.0",
+        "requirejs": "^2.3.6",
+        "rxjs": "^6.3.3",
+        "snappyjs": "0.6.0",
+        "tsickle": "^0.29.0",
+        "typedoc": "^0.11.1",
+        "util": "^0.11.1",
+        "zone.js": "^0.8.26"
+    }
+}
